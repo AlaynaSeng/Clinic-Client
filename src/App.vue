@@ -22,17 +22,7 @@ import { RouterView, RouterLink } from "vue-router";
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link active" id="" to="/">Home</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link active" id="" to="/patients"
-              >Patients</router-link
-            >
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link active" id="" to="/doctors"
-              >Doctors</router-link
-            >
+            <router-link class="nav-link active" id="" to="/">Login</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link active" id="" to="/appointments"
