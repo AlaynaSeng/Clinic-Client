@@ -17,6 +17,13 @@ onMounted(async () => {
 function submitAppointment(e) {
   let form = e.target;
   let data = Object.fromEntries(new FormData(form));
+  for(let i = 0; i < appointments.value.length; i++){
+    if(data.time == appointments.value[i].time && data.date == appointments.value[i].date.split("T")[0]){
+      alert("That time and date are booked, please select the next available appointment");
+      return;
+    }
+  }
+
   fetch("http://localhost:4000/appointments", {
     method: "POST",
     headers: {
@@ -27,72 +34,47 @@ function submitAppointment(e) {
   console.log(data);
 }
 
-let nameInput = ref(null);
-let scheduleInput = ref(null);
-let startInput = ref(null);
-let endInput = ref(null);
-let doctorInput = ref(null);
-let patientInput = ref(null);
-let IDInput = ref(null);
-
-function editAppointment(appointment){
-  nameInput.value.value = appointment.name;
-  scheduleInput.value.value = appointment.schedule;
-  startInput.value.value = appointment.start.split("T")[0];
-  endInput.value.value = appointment.end.split("T")[0];
-  doctorInput.value.value = appointment.doctor;
-  patientInput.value.value = appointment.patient;
-  IDInput.value.value = appointment._id
-  let modal = new bootstrap.Modal(document.querySelector('#edit-appointment'));
-  modal.show();
-}
-
-function updateAppointment(e){
-  let form = e.target;
-  let data = Object.fromEntries(new FormData(form));
-  fetch(`http://localhost:4000/appointments/update/${data._id}`, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  console.log(data)
-}
-
-async function deleteAppointment(appointment) {
-const res = await fetch(
-    `http://localhost:4000/appointments/delete/${appointment._id}`,
-    {
-      method: "Delete",
-      headers: { "content-type": "application/json" },
-    }
-  );
-  location.reload();
-}
 </script>
 
 <template>
   <div id="appointmentDiv">
-      <form id="appointmentForm" @submit.prevent="submitAppointment">
-          <h2>Fill out this form to join a appointment!</h2>
+      <form id="appointmentForm" @submit="submitAppointment">
+          <h5>Status</h5>
+          <select name="status" id="status" class="form-control">
+            <option value="Opened">Opened</option>
+            <option value="Closed">Closed</option>
+            <option value="Delayed">Delayed</option>
+            <option value="Missed">Missed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
           <br>
+          <h5>Location</h5>
+          <input type="text" name="location" id="location" class="form-control" required>
           <br>
-          <h5>Name</h5>
-          <input type="text" name="name" id="name" class="form-control" required>
+          <h5>Date</h5>
+          <input type="date" name="date" id="date" class="form-control" required>
           <br>
-          <h5>Schedule</h5>
-          <input type="text" name="schedule" id="schedule" class="form-control" required>
+          <h5>Time</h5>
+              <select name="time" id="time" class="form-control">
+                <option value="7:00 AM">7:00 AM</option>
+                <option value="8:00 AM">8:00 AM</option>
+                <option value="9:00 AM">9:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="12:00 PM">12:00 PM</option>
+                <option value="1:00 PM">1:00 PM</option>
+                <option value="2:00 PM">2:00 PM</option>
+                <option value="3:00 PM">3:00 PM</option>
+                <option value="4:00 PM">4:00 PM</option>
+                <option value="5:00 PM">5:00 PM</option>
+                <option value="6:00 PM">6:00 PM</option>
+                <option value="7:00 PM">7:00 PM</option>
+                <option value="8:00 PM">8:00 PM</option>
+              </select>
           <br>
-          <h5>Start Date</h5>
-          <input type="date" name="start" id="start" class="form-control" required>
-          <br>
-          <h5>End Date</h5>
-          <input type="date" name="end" id="end" class="form-control" required>
-          <br>
-          <h5>doctor</h5>
-          <select name="doctor" id="doctor" class="form-control" required >
-            <option v-for="(doctor) in doctors" :key="doctor._id" :value="doctor.fname">{{doctor.fname}}</option>
+          <h5>Doctor</h5>
+          <select name="doctor" id="doctor" class="form-control" required>
+            <option v-for="(doctor) in doctors" :key="doctor._id" :value="doctor.lname">{{doctor.lname}}</option>
           </select>
           <br>
           <h5>Patient</h5>
@@ -107,72 +89,26 @@ const res = await fetch(
       <table class="table" id="appointmentTable">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Schedule</th>
-      <th>Start</th>
-      <th>End</th>
+      <th>Status</th>
+      <th>Location</th>
+      <th>Date</th>
+      <th>Time</th>
       <th>Doctor</th>
       <th>Patient</th>
-      <th>Edit</th>
-      <th>Delete</th>
     </tr>
   </thead>
   <tbody>
       <tr  v-for="appointment in appointments" :key="appointment._id">
-        <td>{{appointment.name}}</td>
-        <td>{{appointment.schedule}}</td>
-        <td>{{appointment.start.split("T")[0]}}</td>
-        <td>{{appointment.end.split("T")[0]}}</td>
+        <td>{{appointment.status}}</td>
+        <td>{{appointment.location}}</td>
+        <td>{{appointment.date.split("T")[0]}}</td>
+        <td>{{appointment.time}}</td>
         <td>{{appointment.doctor}}</td>
         <td>{{appointment.patient}}</td>
-        <td><button type="button" class="btn btn-success" @click.prevent="editAppointment(appointment)">Edit</button></td>
-        <td><button type="button" class="btn btn-danger"  @click.prevent="deleteAppointment(appointment)">Delete</button></td>
       </tr>
   </tbody>
 </table>
 
-<div class="modal fade" id="edit-appointment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Update Appointment</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-        <div class="modal-body">
-      <form id="appointmentUpdateForm" @submit.prevent="updateAppointment">
-          <br>
-          <h5>Name</h5>
-          <input type="text" name="name" id="nname" class="form-control" ref="nameInput" required>
-          <br>
-          <h5>Schedule</h5>
-          <input type="text" name="schedule" id="nschedule" class="form-control" ref="scheduleInput" required>
-          <br>
-          <h5>Start Date</h5>
-          <input type="date" name="start" id="nstart" class="form-control" ref="startInput" required>
-          <br>
-          <h5>End Date</h5>
-          <input type="date" name="end" id="nend" class="form-control" ref="endInput" required>
-          <br>
-          <h5>Doctor</h5>
-          <select name="doctor" id="ndoctor" class="form-control" ref="doctorInput" required >
-            <option v-for="(doctor) in doctors" :key="doctor._id" :value="doctor.fname">{{doctor.fname}}</option>
-          </select>
-          <br>
-          <h5>Patient</h5>
-          <select name="patient" id="npatient" class="form-control" ref="patientInput" required>
-            <option v-for="(patient) in patients" :key="patient._id" :value="patient.fname">{{patient.fname}}</option>
-          </select>
-          <br>
-              <input type="hidden" name="_id" id="_id" ref="IDInput">
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Save changes</button>
-          </div>
-            </form>
-          </div>
-        </div>
-        </div>
-      </div>
   </div>
 </template>
 

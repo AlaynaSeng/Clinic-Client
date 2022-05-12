@@ -19,57 +19,9 @@ function submitPatient(e) {
     body: JSON.stringify(data),
   });
   console.log(data);
+  alert("You have successully created your patient profile! If there is a problem with your profile, please contact admin to have the issue resolved.")
 }
 
-let fnameInput = ref(null);
-let lnameInput = ref(null);
-let addressInput = ref(null);
-let phoneInput = ref(null);
-let regInput = ref(null);
-let priceInput = ref(null);
-let emailInput = ref(null);
-let IDInput = ref(null);
-
-function editPatient(patient){
-  fnameInput.value.value = patient.fname;
-  lnameInput.value.value = patient.lname;
-  addressInput.value.value = patient.address;
-  phoneInput.value.value = patient.phone;
-  priceInput.value.value = patient.price;
-  emailInput.value.value = patient.email;
-  regInput.value.value = patient.registration.split("T")[0];
-  IDInput.value.value = patient._id
-  let modal = new bootstrap.Modal(document.querySelector('#edit-patient'));
-  modal.show();
-}
-
-function updatePatient(e){
-  let form = e.target;
-  let data = Object.fromEntries(new FormData(form));
-  fetch(`http://localhost:4000/patients/update/${data._id}`, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  console.log(data)
-}
-
-async function deletePatient(patient) {
-const res = await fetch(
-    `http://localhost:4000/patient/delete/${patient._id}`,
-    {
-      method: "Delete",
-      headers: { "content-type": "application/json" },
-    }
-  );
-  if(res.status == 400){
-    alert(`There was an error deleting this patient. Please make sure no appointments under this name exist before continuing.`)
-    return
-  }
-  location.reload();
-}
 
 </script>
 
@@ -91,93 +43,23 @@ const res = await fetch(
       <h5>Phone Number</h5>
       <input type="text" name="phone" id="phone" class="form-control" required/>
       <br />
-      <h5>Email</h5>
-      <input type="text" name="email" id="email" class="form-control" required/>
+      <h5>Sex</h5>
+      <select name="sex" id="sex" ref="sexInput">
+        <option value="M">M</option>
+        <option value="F">F</option>
+      </select>
+      <br>
       <br />
-      <h5>Registration Date</h5>
-      <input type="date" name="registration" id="registration" class="form-control" required/>
+      <h5>DOB</h5>
+      <input type="date" name="dob" id="dob" class="form-control" required/>
       <br />
-      <h5>Price</h5>
-      <input type="text" name="price" id="price" class="form-control" required/>
+      <h5>Zip</h5>
+      <input type="number" name="zip" id="zip" class="form-control" required/>
       <br />
       <button type="submit" class="btn btn-primary" id="submitpatient">
         Submit
       </button>
     </form>
-    <br />
-    <br />
-    <table class="table" id="patientTable">
-      <thead>
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Address</th>
-          <th>Phone Number</th>
-          <th>Email</th>
-          <th>Registration Date</th>
-          <th>Price</th>
-          <th>Edit</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="patient in patients" :key="patient._id">
-          <td>{{patient.fname}}</td>
-          <td>{{patient.lname}}</td>
-          <td>{{patient.address}}</td>
-          <td>{{patient.phone}}</td>
-          <td>{{patient.email}}</td>
-          <td>{{patient.registration.split("T")[0]}}</td>
-          <td>{{patient.price}}</td>
-          <td><button type="button" class="btn btn-success" @click="editPatient(patient)">Edit</button></td>
-          <td><button type="button" class="btn btn-danger" @click="deletePatient(patient)">Delete</button></td>
-        </tr>
-      </tbody>
-    </table>
-
-
-      <div class="modal fade" id="edit-patient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Update patient</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-        <div class="modal-body">
-      <form id="patientUpdateForm" @submit="updatePatient">
-      <br />
-      <h5>First Name</h5>
-      <input type="text" name="fname" id="nfname" class="form-control" ref="fnameInput" required/>
-      <br />
-      <h5>Last Name</h5>
-      <input type="text" name="lname" id="nlname" class="form-control" ref="lnameInput" required/>
-      <br />
-      <h5>Address</h5>
-      <input type="text" name="address" id="naddress" class="form-control" ref="addressInput" required/>
-      <br />
-      <h5>Phone Number</h5>
-      <input type="text" name="phone" id="nphone" class="form-control" ref="phoneInput" required/>
-      <br />
-      <h5>Email</h5>
-      <input type="text" name="email" id="nemail" class="form-control" ref="emailInput" required/>
-      <br />
-      <h5>Registration Date</h5>
-      <input type="date" name="registration" id="nregistration" class="form-control" ref="regInput" required/>
-      <br />
-      <h5>Price</h5>
-      <input type="text" name="price" id="nprice" class="form-control" ref="priceInput" required/>
-      <br />
-              <br />
-              <input type="hidden" name="_id" id="_id" ref="IDInput">
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary" >Save changes</button>
-          </div>
-            </form>
-          </div>
-        </div>
-        </div>
-      </div>
   </div>
 </template>
 
